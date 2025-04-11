@@ -1,27 +1,69 @@
  
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>启宝博客</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <title>简易博客</title>
+    <style>
+        body { font-family: Arial; max-width: 800px; margin: 0 auto; padding: 20px; }
+        nav { margin-bottom: 20px; }
+        .post { border: 1px solid #ddd; padding: 10px; margin: 10px 0; }
+    </style>
 </head>
 <body>
     <nav>
         <a href="/">首页</a>
         <a href="/about.html">关于</a>
-        <div id="authLinks">
+        <div id="auth">
             <a href="/dashboard.html">仪表盘</a>
-            <button id="logoutBtn" style="display:none;">登出</button>
+            <button id="logout" style="display:none;">登出</button>
         </div>
     </nav>
 
-    <div class="container">
-        <h1>最新文章</h1>
-        <div id="articles"></div>
-    </div>
+    <div id="posts"></div>
 
-    <script type="module" src="/js/app.js"></script>
+    <script type="module">
+        // Firebase初始化
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+        import { 
+            getAuth, signOut, onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+        import { 
+            getFirestore, collection, onSnapshot 
+        } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA4HP6jNQdR1m3cQaAfyi9fXar15v1n29Q",
+            authDomain: "qibao-91f3c.firebaseapp.com",
+            projectId: "qibao-91f3c",
+            storageBucket: "qibao-91f3c.firebasestorage.app",
+            messagingSenderId: "506177155217",
+            appId: "1:506177155217:web:077555f03999eff86fcf30",
+            measurementId: "G-ET5GWR87LZ"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // 实时加载文章
+        onSnapshot(collection(db, "articles"), (snapshot) => {
+            document.getElementById('posts').innerHTML = snapshot.docs.map(doc => `
+                <div class="post">
+                    <h3>${doc.data().title}</h3>
+                    <p>${doc.data().content}</p>
+                    <small>作者：${doc.data().author}</small>
+                </div>
+            `).join('');
+        });
+
+        // 登出功能
+        document.getElementById('logout').addEventListener('click', () => signOut(auth));
+        
+        // 认证状态监听
+        onAuthStateChanged(auth, user => {
+            document.getElementById('logout').style.display = user ? 'block' : 'none';
+        });
+    </script>
 </body>
 </html>
  
