@@ -1,1 +1,144 @@
+/* 通用设置 */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f6f9;
+    color: #333;
+}
 
+h1, h2 {
+    font-family: 'Helvetica', sans-serif;
+    color: #333;
+}
+
+/* 页眉 */
+header {
+    background-color: #2D3E50;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+    border-bottom: 3px solid #3498db;
+}
+
+header h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
+
+nav {
+    margin-top: 10px;
+}
+
+nav a {
+    color: #fff;
+    margin: 0 15px;
+    text-decoration: none;
+    font-size: 1.1em;
+    transition: color 0.3s;
+}
+
+nav a:hover {
+    color: #3498db;
+}
+
+/* 页面主要内容 */
+main {
+    padding: 40px 20px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* 表单 */
+form {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+}
+
+form input, form textarea {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1.1em;
+}
+
+form input:focus, form textarea:focus {
+    border-color: #3498db;
+    outline: none;
+}
+
+form button {
+    width: 100%;
+    padding: 15px;
+    background-color: #3498db;
+    color: white;
+    font-size: 1.2em;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+form button:hover {
+    background-color: #2980b9;
+}
+
+/* 错误信息 */
+#error-message, #register-error-message {
+    color: #e74c3c;
+    font-size: 1.1em;
+}
+
+/* 文章列表 */
+#articleList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.article-item {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: calc(33% - 20px);
+    box-sizing: border-box;
+}
+
+.article-item h3 {
+    font-size: 1.5em;
+    color: #333;
+}
+
+.article-item p {
+    color: #777;
+    font-size: 1.1em;
+}
+
+/* 响应式设计 */
+@media screen and (max-width: 768px) {
+    .article-item {
+        width: calc(50% - 20px);
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .article-item {
+        width: 100%;
+    }
+
+    nav {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    nav a {
+        margin-bottom: 10px;
+    }
+}
