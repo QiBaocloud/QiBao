@@ -1,69 +1,110 @@
- 
 <!DOCTYPE html>
-<html>
+<html lang="zh">
 <head>
-    <title>简易博客</title>
-    <style>
-        body { font-family: Arial; max-width: 800px; margin: 0 auto; padding: 20px; }
-        nav { margin-bottom: 20px; }
-        .post { border: 1px solid #ddd; padding: 10px; margin: 10px 0; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>七宝博客</title>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+    import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA4HP6jNQdR1m3cQaAfyi9fXar15v1n29Q",
+      authDomain: "qibao-91f3c.firebaseapp.com",
+      projectId: "qibao-91f3c",
+      storageBucket: "qibao-91f3c.firebasestorage.app",
+      messagingSenderId: "506177155217",
+      appId: "1:506177155217:web:077555f03999eff86fcf30",
+      measurementId: "G-ET5GWR87LZ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const loginForm = document.getElementById("login-form");
+    const registerForm = document.getElementById("register-form");
+    const postForm = document.getElementById("post-form");
+    const postContainer = document.getElementById("posts");
+    const userSection = document.getElementById("user-section");
+
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = loginForm.email.value;
+      const password = loginForm.password.value;
+      await signInWithEmailAndPassword(auth, email, password);
+    });
+
+    registerForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = registerForm.email.value;
+      const password = registerForm.password.value;
+      await createUserWithEmailAndPassword(auth, email, password);
+    });
+
+    postForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const title = postForm.title.value;
+      const content = postForm.content.value;
+      await addDoc(collection(db, "posts"), {
+        title,
+        content,
+        timestamp: new Date(),
+        author: auth.currentUser.email
+      });
+      loadPosts();
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        userSection.innerHTML = `当前用户：${user.email} <button onclick="signOut(getAuth())">退出</button>`;
+        postForm.style.display = "block";
+        loadPosts();
+      } else {
+        userSection.innerHTML = "请登录或注册";
+        postForm.style.display = "none";
+      }
+    });
+
+    async function loadPosts() {
+      postContainer.innerHTML = "";
+      const querySnapshot = await getDocs(collection(db, "posts"));
+      querySnapshot.forEach((doc) => {
+        const post = doc.data();
+        const div = document.createElement("div");
+        div.innerHTML = `<h3>${post.title}</h3><p>${post.content}</p><small>作者：${post.author}</small>`;
+        postContainer.appendChild(div);
+      });
+    }
+  </script>
+  <style>
+    body { font-family: sans-serif; padding: 20px; max-width: 700px; margin: auto; }
+    input, textarea { width: 100%; margin: 5px 0; padding: 8px; }
+    form { margin-bottom: 20px; border: 1px solid #ccc; padding: 10px; border-radius: 8px; }
+  </style>
 </head>
 <body>
-    <nav>
-        <a href="/">首页</a>
-        <a href="/about.html">关于</a>
-        <div id="auth">
-            <a href="/dashboard.html">仪表盘</a>
-            <button id="logout" style="display:none;">登出</button>
-        </div>
-    </nav>
-
-    <div id="posts"></div>
-
-    <script type="module">
-        // Firebase初始化
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-        import { 
-            getAuth, signOut, onAuthStateChanged 
-        } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
-        import { 
-            getFirestore, collection, onSnapshot 
-        } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyA4HP6jNQdR1m3cQaAfyi9fXar15v1n29Q",
-            authDomain: "qibao-91f3c.firebaseapp.com",
-            projectId: "qibao-91f3c",
-            storageBucket: "qibao-91f3c.firebasestorage.app",
-            messagingSenderId: "506177155217",
-            appId: "1:506177155217:web:077555f03999eff86fcf30",
-            measurementId: "G-ET5GWR87LZ"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        // 实时加载文章
-        onSnapshot(collection(db, "articles"), (snapshot) => {
-            document.getElementById('posts').innerHTML = snapshot.docs.map(doc => `
-                <div class="post">
-                    <h3>${doc.data().title}</h3>
-                    <p>${doc.data().content}</p>
-                    <small>作者：${doc.data().author}</small>
-                </div>
-            `).join('');
-        });
-
-        // 登出功能
-        document.getElementById('logout').addEventListener('click', () => signOut(auth));
-        
-        // 认证状态监听
-        onAuthStateChanged(auth, user => {
-            document.getElementById('logout').style.display = user ? 'block' : 'none';
-        });
-    </script>
+  <h1>七宝博客</h1>
+  <div id="user-section"></div>
+  <form id="login-form">
+    <h2>登录</h2>
+    <input type="email" name="email" placeholder="邮箱" required>
+    <input type="password" name="password" placeholder="密码" required>
+    <button type="submit">登录</button>
+  </form>
+  <form id="register-form">
+    <h2>注册</h2>
+    <input type="email" name="email" placeholder="邮箱" required>
+    <input type="password" name="password" placeholder="密码" required>
+    <button type="submit">注册</button>
+  </form>
+  <form id="post-form" style="display:none;">
+    <h2>发布文章</h2>
+    <input type="text" name="title" placeholder="标题" required>
+    <textarea name="content" placeholder="内容" required></textarea>
+    <button type="submit">发布</button>
+  </form>
+  <div id="posts"></div>
 </body>
 </html>
- 
