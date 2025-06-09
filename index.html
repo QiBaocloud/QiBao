@@ -1,31 +1,203 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>博客首页</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>服务收款平台</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #121212;
+      color: #f5f5f5;
+    }
+    header, footer {
+      background-color: #1e1e1e;
+      text-align: center;
+      padding: 1rem;
+    }
+    .lang-switch {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: #00ffc8;
+      color: #000;
+      border: none;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      margin: 0.5rem auto;
+    }
+    .intro {
+      font-size: 0.95rem;
+      color: #ccc;
+    }
+    .search-box input {
+      width: 80%;
+      max-width: 400px;
+      padding: 0.5rem;
+      border-radius: 6px;
+      border: none;
+      background-color: #2c2c2c;
+      color: white;
+      margin: 1rem auto;
+      display: block;
+    }
+    .services {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 1rem;
+      gap: 1rem;
+    }
+    .card {
+      background-color: #1c1c1c;
+      padding: 1rem;
+      border-radius: 10px;
+      width: 280px;
+      text-align: center;
+      border: 1px solid #333;
+    }
+    .card h2 {
+      color: #00ffc8;
+    }
+    .price {
+      color: #ffd700;
+      margin: 0.5rem 0;
+    }
+    .card button {
+      background-color: #00ffc8;
+      border: none;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.6);
+      backdrop-filter: blur(5px);
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: #222;
+      padding: 2rem;
+      border-radius: 10px;
+      text-align: center;
+    }
+    .modal-content img {
+      width: 200px;
+      height: 200px;
+    }
+    .modal-content p {
+      color: #aaa;
+    }
+    .contact-info {
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+      color: #888;
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <h1>我的博客</h1>
-        <nav>
-            <a href="index.html">首页</a>
-            <a href="login.html">登录</a>
-            <a href="register.html">注册</a>
-            <a href="profile.html">个人资料</a>
-            <a href="post.html">发表文章</a>
-        </nav>
-    </header>
-    <main>
-        <h2>文章列表</h2>
-        <div id="articleList"></div>
-        <div id="userStatus"></div> <!-- 显示用户登录状态 -->
-    </main>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js"></script>
-    <script src="app.js"></script>
+  <button class="lang-switch" onclick="toggleLang()">EN</button>
+  <header>
+    <img src="touxiang.jpg" class="avatar" alt="头像">
+    <h1 id="title">七宝の服务平台</h1>
+    <p class="intro" id="desc">提供AI、开发、技术教学等服务</p>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="搜索服务...">
+    </div>
+  </header>
+
+  <div class="services" id="servicesList">
+    <div class="card" data-title="刷机root">
+      <h2 data-zh="刷机root" data-en="System Flashing">刷机root</h2>
+      <p data-zh="MIUI系统" data-en="MIUI System Unlocking & Root">MIUI系统</p>
+      <div class="price">¥20+</div>
+      <button onclick="pay('刷机root')">付款</button>
+    </div>
+    <div class="card" data-title="环境检测">
+      <h2 data-zh="环境检测" data-en="Environment Check">环境检测</h2>
+      <p data-zh="五系内核以上过牛头30" data-en="Kernel v5+ Device Check & Bypass">过牛头30</p>
+      <div class="price">25+</div>
+      <button onclick="pay('环境检测')">付款</button>
+    </div>
+    <div class="card" data-title="咨询服务">
+      <h2 data-zh="咨询服务" data-en="Consulting Service">咨询服务</h2>
+      <p data-zh="1小时咨询＋解决方案" data-en="1hr Technical Consulting + Solution">1小时咨询＋解决方案</p>
+      <div class="price">¥6</div>
+      <button onclick="pay('咨询服务')">付款</button>
+    </div>
+    <div class="card" data-title="无偿捐赠">
+      <h2 data-zh="无偿捐赠" data-en="Donation">无偿捐赠</h2>
+      <p data-zh="请七宝吃阿尔卑斯棒棒糖" data-en="Buy Qibao a lollipop">请七宝吃阿尔卑斯棒棒糖</p>
+      <div class="price">¥1+</div>
+      <button onclick="pay('无偿捐赠')">付款</button>
+    </div>
+  </div>
+
+  <div class="modal" id="paymentModal">
+    <div class="modal-content">
+      <h2 data-zh="请使用支付宝扫码支付" data-en="Please use Alipay to scan the code to pay.">请使用支付宝扫码支付</h2>
+      <img src="zfb.png" alt="二维码">
+      <p id="orderText">订单号：</p>
+      <p data-zh="支付后请截图并通过微信发送付款凭证" data-en="Please screenshot and send payment proof via WeChat">支付后请截图并通过微信发送付款凭证</p>
+      <p data-zh="微信：liuyujia051227" data-en="WeChat: liuyujia051227">微信：liuyujia051227</p>
+      <button onclick="closeModal()">关闭</button>
+    </div>
+  </div>
+
+  <footer>
+    <div>© 2025 七宝工作室</div>
+    <div class="contact-info" data-zh="微信：liuyujia051227 | QQ: 2789151911 | 邮箱：2789151911@qq.com" data-en="WeChat: liuyujia051227 | TG: @qibao123456 | Email: 2789151911@qq.com">微信：liuyujia051227 | QQ：2789151911 | 邮箱：2789151911@qq.com</div>
+  </footer>
+
+  <script>
+    const modal = document.getElementById('paymentModal');
+    const orderText = document.getElementById('orderText');
+
+    function pay(serviceName) {
+      const orderId = 'QB-' + Date.now().toString(36).toUpperCase();
+      orderText.textContent = `订单号：${orderId} (${serviceName})`;
+      modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+      modal.style.display = 'none';
+    }
+
+    window.onclick = (e) => {
+      if (e.target === modal) closeModal();
+    };
+
+    document.getElementById('searchInput').addEventListener('input', function() {
+      const val = this.value.toLowerCase();
+      document.querySelectorAll('.card').forEach(card => {
+        const title = card.dataset.title.toLowerCase();
+        card.style.display = title.includes(val) ? 'block' : 'none';
+      });
+    });
+
+    let isZh = true;
+    function toggleLang() {
+      isZh = !isZh;
+      document.querySelector('.lang-switch').textContent = isZh ? 'EN' : '中';
+      document.getElementById('title').textContent = isZh ? '七宝の服务平台' : "Qibao's Service Portal";
+      document.getElementById('desc').textContent = isZh ? '提供AI、开发、技术教学等服务' : 'AI, Dev, Teaching Services';
+
+      document.querySelectorAll('[data-en][data-zh]').forEach(el => {
+        el.textContent = isZh ? el.dataset.zh : el.dataset.en;
+      });
+    }
+  </script>
 </body>
 </html>
