@@ -1,203 +1,526 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>服务收款平台</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #121212;
-      color: #f5f5f5;
-    }
-    header, footer {
-      background-color: #1e1e1e;
-      text-align: center;
-      padding: 1rem;
-    }
-    .lang-switch {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      background: #00ffc8;
-      color: #000;
-      border: none;
-      padding: 0.4rem 0.8rem;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    .avatar {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      margin: 0.5rem auto;
-    }
-    .intro {
-      font-size: 0.95rem;
-      color: #ccc;
-    }
-    .search-box input {
-      width: 80%;
-      max-width: 400px;
-      padding: 0.5rem;
-      border-radius: 6px;
-      border: none;
-      background-color: #2c2c2c;
-      color: white;
-      margin: 1rem auto;
-      display: block;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>七宝服务平台</title>
+<style>
+  :root {
+    --bg-color: #121212;
+    --header-footer-bg: #1e1e1e;
+    --text-color: #f5f5f5;
+    --card-bg: #1c1c1c;
+    --card-border: #333;
+    --accent-color: #00ffc8;
+    --price-color: #ffd700;
+    --modal-bg: #222;
+    --secondary-text: #ccc;
+    
+    /* 浅色模式变量 */
+    --light-bg-color: #f5f7fa;
+    --light-header-footer-bg: #ffffff;
+    --light-text-color: #000000; /* 纯黑色字体 */
+    --light-card-bg: #ffffff;
+    --light-card-border: #e0e0e0;
+    --light-modal-bg: #f8f9fa;
+    --light-secondary-text: #444; /* 深灰色 */
+  }
+
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
+    line-height: 1.6;
+  }
+
+  body.light-mode {
+    --bg-color: var(--light-bg-color);
+    --header-footer-bg: var(--light-header-footer-bg);
+    --text-color: var(--light-text-color);
+    --card-bg: var(--light-card-bg);
+    --card-border: var(--light-card-border);
+    --modal-bg: var(--light-modal-bg);
+    --secondary-text: var(--light-secondary-text);
+  }
+
+  header, footer {
+    background-color: var(--header-footer-bg);
+    text-align: center;
+    padding: 1.5rem;
+    transition: background-color 0.3s;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+
+  .avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin: 0.5rem auto;
+    border: 3px solid var(--accent-color);
+    box-shadow: 0 0 15px rgba(0,255,200,0.3);
+    object-fit: cover;
+  }
+
+  .intro {
+    font-size: 1.05rem;
+    color: var(--secondary-text);
+    transition: color 0.3s;
+    max-width: 600px;
+    margin: 0.5rem auto;
+  }
+
+  .contact-header {
+    margin-top: 0.8rem;
+    font-size: 0.95rem;
+    color: var(--accent-color);
+    transition: color 0.3s;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .contact-header span {
+    cursor: default;
+    user-select: text;
+    padding: 0.3rem 0.8rem;
+    background: rgba(0,255,200,0.1);
+    border-radius: 20px;
+    transition: all 0.3s;
+  }
+
+  .contact-header span:hover {
+    background: rgba(0,255,200,0.2);
+    transform: translateY(-2px);
+  }
+
+  .lang-switch, .theme-switch {
+    position: fixed;
+    top: 15px;
+    background: var(--accent-color);
+    color: #000;
+    border: none;
+    border-radius: 6px;
+    padding: 0.4rem 1rem;
+    cursor: pointer;
+    font-weight: bold;
+    z-index: 1000;
+    transition: all 0.3s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .lang-switch:hover, .theme-switch:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+
+  .lang-switch {
+    right: 15px;
+  }
+
+  .theme-switch {
+    right: 130px;
+  }
+
+  .services {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 1.5rem;
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .card {
+    background-color: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 12px;
+    width: 280px;
+    text-align: center;
+    border: 1px solid var(--card-border);
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  }
+
+  .card h2 {
+    color: var(--accent-color);
+    font-size: 1.6rem;
+    margin: 0 0 0.8rem;
+  }
+
+  .card p {
+    color: var(--secondary-text);
+    min-height: 60px;
+    font-size: 1rem;
+  }
+
+  .price {
+    color: var(--price-color);
+    margin: 1rem 0;
+    font-size: 1.4rem;
+    font-weight: bold;
+  }
+
+  .card button {
+    background-color: var(--accent-color);
+    border: none;
+    padding: 0.6rem 1.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #000;
+    font-weight: bold;
+    font-size: 1.05rem;
+    transition: all 0.3s;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+
+  .card button:hover {
+    opacity: 0.9;
+    transform: scale(1.05);
+  }
+
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    backdrop-filter: blur(8px);
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+  }
+
+  .modal-content {
+    background: var(--modal-bg);
+    padding: 2.5rem;
+    border-radius: 15px;
+    text-align: center;
+    max-width: 400px;
+    transition: background-color 0.3s;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .modal-content h2 {
+    color: var(--accent-color);
+    margin-top: 0;
+    font-size: 1.8rem;
+  }
+
+  .modal-content img {
+    width: 220px;
+    height: 220px;
+    margin: 1.2rem auto;
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+
+  .modal-content p {
+    color: var(--secondary-text);
+    transition: color 0.3s;
+    font-size: 1.05rem;
+    margin: 1rem 0;
+  }
+
+  .contact-info {
+    margin-top: 0.8rem;
+    font-size: 0.9rem;
+    color: var(--secondary-text);
+    transition: color 0.3s;
+  }
+
+  #wechatCode {
+    width: 200px;
+    height: 200px;
+    margin: 1.2rem auto;
+    display: none;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+
+  #showWxCodeBtn {
+    margin-top: 1.2rem;
+    background-color: var(--accent-color);
+    border: none;
+    padding: 0.6rem 1.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #000;
+    font-weight: bold;
+    transition: all 0.3s;
+    font-size: 1.05rem;
+  }
+
+  #wechatIdDisplay {
+    font-weight: bold;
+    font-size: 1.4rem;
+    color: var(--accent-color);
+    margin-top: 1.2rem;
+    transition: color 0.3s;
+    padding: 0.5rem;
+    background: rgba(0,255,200,0.1);
+    border-radius: 8px;
+    display: inline-block;
+  }
+
+  @media (max-width: 768px) {
     .services {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
       padding: 1rem;
-      gap: 1rem;
+      gap: 1.2rem;
     }
+    
     .card {
-      background-color: #1c1c1c;
-      padding: 1rem;
-      border-radius: 10px;
-      width: 280px;
-      text-align: center;
-      border: 1px solid #333;
+      width: 100%;
+      max-width: 350px;
     }
-    .card h2 {
-      color: #00ffc8;
-    }
-    .price {
-      color: #ffd700;
-      margin: 0.5rem 0;
-    }
-    .card button {
-      background-color: #00ffc8;
-      border: none;
+    
+    .theme-switch {
+      right: 110px;
       padding: 0.4rem 0.8rem;
-      border-radius: 6px;
-      cursor: pointer;
+      font-size: 0.9rem;
     }
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background-color: rgba(0,0,0,0.6);
-      backdrop-filter: blur(5px);
-      justify-content: center;
-      align-items: center;
+    
+    .lang-switch {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.9rem;
     }
-    .modal-content {
-      background: #222;
-      padding: 2rem;
-      border-radius: 10px;
-      text-align: center;
+    
+    .contact-header {
+      flex-direction: column;
+      gap: 0.5rem;
     }
-    .modal-content img {
-      width: 200px;
-      height: 200px;
+    
+    .avatar {
+      width: 85px;
+      height: 85px;
     }
-    .modal-content p {
-      color: #aaa;
-    }
-    .contact-info {
-      margin-top: 0.5rem;
-      font-size: 0.85rem;
-      color: #888;
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
-  <button class="lang-switch" onclick="toggleLang()">EN</button>
-  <header>
-    <img src="touxiang.jpg" class="avatar" alt="头像">
-    <h1 id="title">七宝の服务平台</h1>
-    <p class="intro" id="desc">提供AI、开发、技术教学等服务</p>
-    <div class="search-box">
-      <input type="text" id="searchInput" placeholder="搜索服务...">
-    </div>
-  </header>
+<button class="theme-switch" id="themeSwitchBtn" title="切换主题">
+  <span id="themeIcon">🌙</span>
+</button>
+<button class="lang-switch" id="langSwitchBtn">English</button>
 
-  <div class="services" id="servicesList">
-    <div class="card" data-title="刷机root">
-      <h2 data-zh="刷机root" data-en="System Flashing">刷机root</h2>
-      <p data-zh="MIUI系统" data-en="MIUI System Unlocking & Root">MIUI系统</p>
-      <div class="price">¥20+</div>
-      <button onclick="pay('刷机root')">付款</button>
-    </div>
-    <div class="card" data-title="环境检测">
-      <h2 data-zh="环境检测" data-en="Environment Check">环境检测</h2>
-      <p data-zh="五系内核以上过牛头30" data-en="Kernel v5+ Device Check & Bypass">过牛头30</p>
-      <div class="price">25+</div>
-      <button onclick="pay('环境检测')">付款</button>
-    </div>
-    <div class="card" data-title="咨询服务">
-      <h2 data-zh="咨询服务" data-en="Consulting Service">咨询服务</h2>
-      <p data-zh="1小时咨询＋解决方案" data-en="1hr Technical Consulting + Solution">1小时咨询＋解决方案</p>
-      <div class="price">¥6</div>
-      <button onclick="pay('咨询服务')">付款</button>
-    </div>
-    <div class="card" data-title="无偿捐赠">
-      <h2 data-zh="无偿捐赠" data-en="Donation">无偿捐赠</h2>
-      <p data-zh="请七宝吃阿尔卑斯棒棒糖" data-en="Buy Qibao a lollipop">请七宝吃阿尔卑斯棒棒糖</p>
-      <div class="price">¥1+</div>
-      <button onclick="pay('无偿捐赠')">付款</button>
-    </div>
+<header>
+  <div class="avatar-container">
+    <img src="touxiang.jpg" class="avatar" alt="头像" />
   </div>
-
-  <div class="modal" id="paymentModal">
-    <div class="modal-content">
-      <h2 data-zh="请使用支付宝扫码支付" data-en="Please use Alipay to scan the code to pay.">请使用支付宝扫码支付</h2>
-      <img src="zfb.png" alt="二维码">
-      <p id="orderText">订单号：</p>
-      <p data-zh="支付后请截图并通过微信发送付款凭证" data-en="Please screenshot and send payment proof via WeChat">支付后请截图并通过微信发送付款凭证</p>
-      <p data-zh="微信：liuyujia051227" data-en="WeChat: liuyujia051227">微信：liuyujia051227</p>
-      <button onclick="closeModal()">关闭</button>
-    </div>
+  <h1 data-zh="七宝服务平台" data-en="Qibao's Service Platform" data-ja="七宝のサービスプラットフォーム">七宝の服务平台</h1>
+  <p class="intro" data-zh="提供专业的AI开发、系统刷机、技术教学等全方位技术服务" data-en="Offering comprehensive technical services including AI development, system flashing, and tech teaching" data-ja="AI開発、システムフラッシング、技術教育などの包括的な技術サービスを提供">提供专业的AI开发、系统刷机、技术教学等全方位技术服务</p>
+  <div class="contact-header" title="联系方式">
+    <span data-zh="微信：liuyujia051227" data-en="WeChat: liuyujia051227" data-ja="微信：liuyujia051227">微信：liuyujia051227</span>
+    <span data-zh="QQ：2789151911" data-en="QQ: 2789151911" data-ja="QQ：2789151911">QQ：2789151911</span>
+    <span data-zh="邮箱：2789151911@qq.com" data-en="Email: 2789151911@qq.com" data-ja="メール：2789151911@qq.com">邮箱：2789151911@qq.com</span>
   </div>
+</header>
 
-  <footer>
-    <div>© 2025 七宝工作室</div>
-    <div class="contact-info" data-zh="微信：liuyujia051227 | QQ: 2789151911 | 邮箱：2789151911@qq.com" data-en="WeChat: liuyujia051227 | TG: @qibao123456 | Email: 2789151911@qq.com">微信：liuyujia051227 | QQ：2789151911 | 邮箱：2789151911@qq.com</div>
-  </footer>
+<div class="services" id="servicesList">
+  <div class="card" data-title-zh="刷机root" data-title-en="Flashing root" data-title-ja="フラッシング・ルート">
+    <h2 data-zh="刷机root" data-en="Flashing root" data-ja="フラッシング・ルート">刷机root</h2>
+    <p data-zh="提供MIUI系统刷机、root权限获取、系统优化等专业服务" data-en="Professional services for MIUI system flashing, root access, and system optimization" data-ja="MIUIシステムのフラッシング、ルートアクセス、システム最適化のプロフェッショナルサービス">提供MIUI系统刷机、root权限获取、系统优化等专业服务</p>
+    <div class="price" data-zh="¥20+" data-en="$20+" data-ja="¥20+">¥20+</div>
+    <button onclick="pay(currentLang === 'zh' ? '刷机root' : currentLang === 'en' ? 'Flashing root' : 'フラッシング・ルート')" 
+            data-zh="立即付款" data-en="Pay Now" data-ja="今すぐ支払う">立即付款</button>
+  </div>
+  <div class="card" data-title-zh="环境检测" data-title-en="Environment Check" data-title-ja="環境チェック">
+    <h2 data-zh="环境检测" data-en="Environment Check" data-ja="環境チェック">环境检测</h2>
+    <p data-zh="专业通过牛头30环境检测，确保系统安全稳定运行" data-en="Professional Niutou 30 environment detection to ensure system security and stability" data-ja="牛頭30環境検出をプロフェッショナルに通過し、システムの安全で安定した実行を確保">专业通过牛头30环境检测，确保系统安全稳定运行</p>
+    <div class="price" data-zh="¥25+" data-en="$25+" data-ja="¥25+">¥25+</div>
+    <button onclick="pay(currentLang === 'zh' ? '环境检测' : currentLang === 'en' ? 'Environment Check' : '環境チェック')" 
+            data-zh="立即付款" data-en="Pay Now" data-ja="今すぐ支払う">立即付款</button>
+  </div>
+  <div class="card" data-title-zh="咨询服务" data-title-en="Consulting Service" data-title-ja="相談サービス">
+    <h2 data-zh="咨询服务" data-en="Consulting Service" data-ja="相談サービス">咨询服务</h2>
+    <p data-zh="提供1小时技术咨询+解决方案，解决各类技术难题" data-en="1-hour technical consulting + solution to solve various technical problems" data-ja="1時間の技術相談＋ソリューションで様々な技術的問題を解決">提供1小时技术咨询+解决方案，解决各类技术难题</p>
+    <div class="price" data-zh="¥6" data-en="$6" data-ja="¥6">¥6</div>
+    <button onclick="pay(currentLang === 'zh' ? '咨询服务' : currentLang === 'en' ? 'Consulting Service' : '相談サービス')" 
+            data-zh="立即付款" data-en="Pay Now" data-ja="今すぐ支払う">立即付款</button>
+  </div>
+  <div class="card" data-title-zh="无偿捐赠" data-title-en="Donation" data-title-ja="寄付">
+    <h2 data-zh="无偿捐赠" data-en="Donation" data-ja="寄付">无偿捐赠</h2>
+    <p data-zh="支持七宝继续提供优质服务，请七宝吃阿尔卑斯棒棒糖" data-en="Support Qibao to continue providing quality services, treat Qibao to Alps candy" data-ja="七宝が質の高いサービスを提供し続けることを支援し、七宝にアルプスキャンディをおごる">支持七宝继续提供优质服务，请七宝吃阿尔卑斯棒棒糖</p>
+    <div class="price" data-zh="¥1+" data-en="$1+" data-ja="¥1+">¥1+</div>
+    <button onclick="pay(currentLang === 'zh' ? '无偿捐赠' : currentLang === 'en' ? 'Donation' : '寄付')" 
+            data-zh="支持七宝" data-en="Support Qibao" data-ja="七宝をサポート">支持七宝</button>
+  </div>
+</div>
 
-  <script>
-    const modal = document.getElementById('paymentModal');
-    const orderText = document.getElementById('orderText');
+<button id="contactBtn" style="margin: 1.5rem auto; display: block; background: var(--accent-color); color:#000; border:none; padding:0.7rem 1.5rem; border-radius:8px; cursor:pointer; font-size:1.1rem; font-weight:bold; transition:all 0.3s;"
+        data-zh="联系客服" data-en="Contact Support" data-ja="サポートに連絡">联系客服</button>
 
-    function pay(serviceName) {
-      const orderId = 'QB-' + Date.now().toString(36).toUpperCase();
-      orderText.textContent = `订单号：${orderId} (${serviceName})`;
-      modal.style.display = 'flex';
+<div class="modal" id="paymentModal">
+  <div class="modal-content">
+    <h2 data-zh="请使用支付宝扫码支付" data-en="Please scan QR code with Alipay" data-ja="支付宝でQRコードをスキャンしてください">请使用支付宝扫码支付</h2>
+    <img src="zfb.png" alt="支付宝二维码" />
+    <p id="orderText">订单号：</p>
+    <p data-zh="支付后请截图并通过微信发送付款凭证" data-en="After payment, please screenshot and send payment proof via WeChat" data-ja="支払い後、スクリーンショットを撮ってWeChatで送信してください">支付后请截图并通过微信发送付款凭证</p>
+    <p data-zh="微信：liuyujia051227" data-en="WeChat: liuyujia051227" data-ja="微信：liuyujia051227">微信：liuyujia051227</p>
+    <button onclick="closeModal()" data-zh="关闭" data-en="Close" data-ja="閉じる" style="margin-top:1rem; padding:0.6rem 1.5rem; background:var(--accent-color); color:#000; border:none; border-radius:6px; cursor:pointer; font-weight:bold;">关闭</button>
+  </div>
+</div>
+
+<div class="modal" id="wxModal">
+  <div class="modal-content">
+    <h2 data-zh="联系客服微信号" data-en="Contact WeChat Support" data-ja="WeChatサポートに連絡">联系客服微信号</h2>
+    <div id="wechatIdDisplay">liuyujia051227</div>
+    <p data-zh="点击下方按钮显示/隐藏客服二维码，扫码添加好友" data-en="Click button below to show/hide WeChat QR code to add friend" data-ja="下のボタンをクリックしてWeChatのQRコードを表示/非表示し、友達を追加してください">点击下方按钮显示/隐藏客服二维码，扫码添加好友</p>
+    <img id="wechatCode" src="wxhy.png" alt="微信二维码" />
+    <button id="showWxCodeBtn" data-zh="显示二维码" data-en="Show QR Code" data-ja="QRコード表示">显示二维码</button>
+    <button onclick="closeWxModal()" data-zh="关闭" data-en="Close" data-ja="閉じる" style="margin-top:1rem; padding:0.6rem 1.5rem; background:var(--accent-color); color:#000; border:none; border-radius:6px; cursor:pointer; font-weight:bold;">关闭</button>
+  </div>
+</div>
+
+<script>
+  const LANGS = ['zh', 'en', 'ja'];
+  let currentLangIndex = 0;
+  let currentLang = LANGS[currentLangIndex];
+
+  const langSwitchBtn = document.getElementById('langSwitchBtn');
+  const themeSwitchBtn = document.getElementById('themeSwitchBtn');
+  const themeIcon = document.getElementById('themeIcon');
+  const elementsToSwitch = document.querySelectorAll('[data-zh]');
+
+  const langBtnLabels = {
+    zh: 'English',
+    en: '日本語',
+    ja: '中文',
+  };
+
+  // 主题管理
+  function initTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+    
+    if (savedTheme === 'light' || (!savedTheme && prefersLight)) {
+      document.body.classList.add('light-mode');
+      themeIcon.textContent = '亮️';
+    } else {
+      document.body.classList.remove('light-mode');
+      themeIcon.textContent = '暗';
     }
+  }
 
-    function closeModal() {
-      modal.style.display = 'none';
+  function toggleTheme() {
+    document.body.classList.toggle('light-mode');
+    if (document.body.classList.contains('light-mode')) {
+      localStorage.setItem('theme', 'light');
+      themeIcon.textContent = '亮️';
+    } else {
+      localStorage.setItem('theme', 'dark');
+      themeIcon.textContent = '暗';
     }
+  }
 
-    window.onclick = (e) => {
-      if (e.target === modal) closeModal();
-    };
-
-    document.getElementById('searchInput').addEventListener('input', function() {
-      const val = this.value.toLowerCase();
-      document.querySelectorAll('.card').forEach(card => {
-        const title = card.dataset.title.toLowerCase();
-        card.style.display = title.includes(val) ? 'block' : 'none';
-      });
+  // 语言切换
+  function switchLanguage(lang) {
+    currentLang = lang;
+    elementsToSwitch.forEach(el => {
+      const text = el.getAttribute('data-' + lang);
+      if(text) el.textContent = text;
     });
+    langSwitchBtn.textContent = langBtnLabels[lang];
+  }
 
-    let isZh = true;
-    function toggleLang() {
-      isZh = !isZh;
-      document.querySelector('.lang-switch').textContent = isZh ? 'EN' : '中';
-      document.getElementById('title').textContent = isZh ? '七宝の服务平台' : "Qibao's Service Portal";
-      document.getElementById('desc').textContent = isZh ? '提供AI、开发、技术教学等服务' : 'AI, Dev, Teaching Services';
+  // 事件监听
+  langSwitchBtn.addEventListener('click', () => {
+    currentLangIndex = (currentLangIndex + 1) % LANGS.length;
+    switchLanguage(LANGS[currentLangIndex]);
+  });
 
-      document.querySelectorAll('[data-en][data-zh]').forEach(el => {
-        el.textContent = isZh ? el.dataset.zh : el.dataset.en;
-      });
+  themeSwitchBtn.addEventListener('click', toggleTheme);
+
+  // 默认语言中文
+  switchLanguage(currentLang);
+  initTheme();
+
+  // 付款弹窗语言动态切换
+  const modal = document.getElementById('paymentModal');
+  const orderText = document.getElementById('orderText');
+  const wxModal = document.getElementById('wxModal');
+  const wechatCodeImg = document.getElementById('wechatCode');
+  const showWxCodeBtn = document.getElementById('showWxCodeBtn');
+  const contactBtn = document.getElementById('contactBtn');
+
+  function pay(serviceName) {
+    const orderId = 'QB-' + Date.now().toString(36).toUpperCase();
+    let orderLabel = {
+      zh: '订单号：',
+      en: 'Order ID: ',
+      ja: '注文番号：',
+    }[currentLang];
+    orderText.textContent = orderLabel + `${orderId} (${serviceName})`;
+    modal.style.display = 'flex';
+  }
+
+  function closeModal() {
+    modal.style.display = 'none';
+  }
+
+  function closeWxModal() {
+    wxModal.style.display = 'none';
+    wechatCodeImg.style.display = 'none';
+    const labelShow = {
+      zh: '显示二维码',
+      en: 'Show QR Code',
+      ja: 'QRコード表示',
+    }[currentLang];
+    showWxCodeBtn.textContent = labelShow;
+  }
+
+  contactBtn.addEventListener('click', () => {
+    wxModal.style.display = 'flex';
+  });
+
+  contactBtn.addEventListener('mouseover', () => {
+    contactBtn.style.transform = 'scale(1.05)';
+  });
+
+  contactBtn.addEventListener('mouseout', () => {
+    contactBtn.style.transform = 'scale(1)';
+  });
+
+  showWxCodeBtn.addEventListener('click', () => {
+    if (wechatCodeImg.style.display === 'block') {
+      wechatCodeImg.style.display = 'none';
+      const labelShow = {
+        zh: '显示二维码',
+        en: 'Show QR Code',
+        ja: 'QRコード表示',
+      }[currentLang];
+      showWxCodeBtn.textContent = labelShow;
+    } else {
+      wechatCodeImg.style.display = 'block';
+      const labelHide = {
+        zh: '隐藏二维码',
+        en: 'Hide QR Code',
+        ja: 'QRコード非表示',
+      }[currentLang];
+      showWxCodeBtn.textContent = labelHide;
     }
-  </script>
+  });
+
+  // 点击遮罩关闭弹窗
+  window.onclick = (e) => {
+    if (e.target === modal) closeModal();
+    if (e.target === wxModal) closeWxModal();
+  };
+</script>
 </body>
 </html>
